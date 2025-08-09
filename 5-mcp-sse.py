@@ -14,7 +14,7 @@ import logfire
 logfire.configure()
 logfire.instrument_pydantic_ai()
 
-mcp_server = MCPServerSSE(url="http://localhost:8000/sse")
+mcp_server = MCPServerSSE(url="http://localhost:8080/sse")
 
 
 class Result(BaseModel):
@@ -33,7 +33,7 @@ agent = Agent(
 
 async def chat():
     async with agent:
-        result = await agent.run("แสดงจำนวนผู้ป่วย 10 ลำดับโรคที่พบมากที่สุด ปี 2567")
+        result = await agent.run("นับจำนวนประชากรแยกรายหมู่บ้าน")
     print(result.output.query)
     print(result.output.result)
 
