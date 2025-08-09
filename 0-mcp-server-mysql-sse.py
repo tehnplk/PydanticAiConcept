@@ -1,5 +1,6 @@
 import pymysql
 import os
+import json
 from dotenv import load_dotenv
 
 from mcp.server.fastmcp import FastMCP
@@ -32,7 +33,9 @@ def get_schema() -> str:
                 
                 schema_info.append(f"Table: {table_name}")
                 for col in columns:
-                    schema_info.append(f"  {col[0]} {col[1]} {col[2]} {col[3]} {col[4]} {col[5]}")
+                    # MySQL DESCRIBE returns: Field, Type, Null, Key, Default, Extra
+                    col_info = " | ".join(str(item) if item is not None else "NULL" for item in col)
+                    schema_info.append(f"  {col_info}")
                 schema_info.append("")
             
             return "\n".join(schema_info)
@@ -52,31 +55,15 @@ def query_data(sql: str) -> str:
         charset='utf8mb4'
     )
     try:
-        with conn.cursor() as cursor:
+        with conn.cursor(pymysql.cursors.DictCursor) as cursor:
             cursor.execute(sql)
             result = cursor.fetchall()
             
-            # Format results in a table-like format
+            # Format results as JSON (DictCursor already returns dictionaries)
             if result:
-                # Get column names from cursor description
-                columns = [desc[0] for desc in cursor.description] if cursor.description else []
-                
-                if columns:
-                    # Create header
-                    header = " | ".join(columns)
-                    separator = "-" * len(header)
-                    
-                    # Format rows
-                    rows = []
-                    for row in result:
-                        formatted_row = " | ".join(str(val) if val is not None else "NULL" for val in row)
-                        rows.append(formatted_row)
-                    
-                    return f"{header}\n{separator}\n" + "\n".join(rows)
-                else:
-                    return "\n".join(str(row) for row in result)
+                return json.dumps(result, ensure_ascii=False, indent=2, default=str)
             else:
-                return "No results found"
+                return json.dumps({"message": "No results found"}, ensure_ascii=False)
     except Exception as e:
         return f"Error: {str(e)}"
     finally:
