@@ -14,7 +14,7 @@ import logfire
 logfire.configure()
 logfire.instrument_pydantic_ai()
 
-mcp_sqlite = MCPServerSSE(url="http://localhost:8000/sse")
+mcp_server = MCPServerSSE(url="http://localhost:8000/sse")
 
 
 class Result(BaseModel):
@@ -22,21 +22,18 @@ class Result(BaseModel):
     result: str = Field(description="result of the SQL query display in tabular format")
 
 
+sys_prompt = open("sys_prompt.txt", "r", encoding="utf-8").read()
 agent = Agent(
     model="google-gla:gemini-2.5-flash",
-    toolsets=[mcp_sqlite],
-    system_prompt=(
-        "คุณเป็นผู้ช่วยเขียน SQL สำหรับฐานข้อมูล SQLite โดยใช้เครื่องมือ MCP",
-        "สามารถดู resource ของ MCP Tool ก่อนเพื่อให้ทราบว่ามีตารางอะไรบ้าง",
-        "ใช้ resource นี้เพื่อให้ model รู้จักตารางและการ join",
-    ),
+    toolsets=[mcp_server],
+    system_prompt=sys_prompt,
     output_type=Result,
 )
 
 
 async def chat():
     async with agent:
-        result = await agent.run("แสดงจำนวนผู้ป่วย 10 ลำดับโรคที่พบมากที่สุด")
+        result = await agent.run("แสดงจำนวนผู้ป่วย 10 ลำดับโรคที่พบมากที่สุด ปี 2567")
     print(result.output.query)
     print(result.output.result)
 
