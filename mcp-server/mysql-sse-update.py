@@ -5,6 +5,9 @@ Provides tools for querying MySQL database and resources for table descriptions
 """
 
 import os
+from dotenv import load_dotenv
+load_dotenv()
+
 import json
 from typing import List, Dict, Any, Optional
 import pymysql
@@ -76,27 +79,27 @@ def describe_table(table_name: str) -> Dict[str, Any]:
 
 
 @mcp.tool()
-def query_data(query: str, limit: Optional[int] = 100) -> Dict[str, Any]:
+def query_data(query: str, limit: Optional[int] = 15) -> Dict[str, Any]:
     """
     Execute a SQL query on the MySQL database
 
     Args:
         query: SQL query to execute (SELECT statements only for safety)
-        limit: Maximum number of rows to return (default: 100)
+        limit: Maximum number of rows to return (default: 15)
 
     Returns:
         Dictionary containing query results and metadata
     """
     # Safety check - only allow SELECT queries
     query_upper = query.strip().upper()
-    if not query_upper.startswith("SELECT"):
+    if not (query_upper.startswith("SELECT") or query_upper.startswith("DESCRIBE")):
         return {
-            "error": "Only SELECT queries are allowed for security reasons",
+            "error": "Only SELECT and DESCRIBE queries are allowed for security reasons",
             "query": query,
         }
 
     # Add LIMIT if not present and limit is specified
-    if limit and "LIMIT" not in query_upper:
+    if query_upper.startswith("SELECT") and limit and "LIMIT" not in query_upper :    
         query += f" LIMIT {limit}"
 
     connection = get_db_connection()
