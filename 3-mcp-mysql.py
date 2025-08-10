@@ -9,15 +9,20 @@ import asyncio
 
 load_dotenv()
 
+import logfire
+
+logfire.configure()  
+logfire.instrument_pydantic_ai()
+
 mcp_mysql = MCPServerStdio(
     "uvx",
     ["--from", "mysql-mcp-server", "mysql_mcp_server"],
     {
-        "MYSQL_HOST": "localhost",
-        "MYSQL_PORT": "3310",
-        "MYSQL_USER": "root",
-        "MYSQL_PASSWORD": "112233",
-        "MYSQL_DATABASE": "hos2",
+        "MYSQL_HOST": os.getenv("MYSQL_HOST"),
+        "MYSQL_PORT": os.getenv("MYSQL_PORT", "3310"),
+        "MYSQL_USER": os.getenv("MYSQL_USER", "root"),
+        "MYSQL_PASSWORD": os.getenv("MYSQL_PASSWORD", "112233"),
+        "MYSQL_DATABASE": os.getenv("MYSQL_DATABASE", "hos2"),
     },
 )
 
