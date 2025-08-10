@@ -9,6 +9,11 @@ import asyncio
 
 load_dotenv()
 
+import logfire
+
+logfire.configure()  
+logfire.info('Hello, {name}!', name='world')
+
 mcp_mysql = MCPServerStdio(
     "uvx",
     ["--from", "mysql-mcp-server", "mysql_mcp_server"],
