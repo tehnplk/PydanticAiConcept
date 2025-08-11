@@ -1,0 +1,9 @@
+{
+	"servers": {
+		"mcp-chart": {
+			"url": "http://localhost:1122/sse",
+			"type": "http"
+		}
+	},
+	"inputs": []
+}
