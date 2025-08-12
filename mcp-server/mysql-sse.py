@@ -7,7 +7,7 @@ from mcp.server.fastmcp import FastMCP
 
 load_dotenv()
 
-mcp = FastMCP("MySQL Explorer", host="0.0.0.0", port=8080)
+mcp = FastMCP("MySQL Explorer", host="0.0.0.0", port=1123)
 
 
 @mcp.resource("schema://main")

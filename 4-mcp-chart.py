@@ -2,7 +2,7 @@ from unittest import result
 from pydantic_ai import Agent
 from pydantic_ai.models.openai import OpenAIModel
 from pydantic_ai.providers.openrouter import OpenRouterProvider
-from pydantic_ai.mcp import MCPServerStdio
+from pydantic_ai.mcp import MCPServerStdio , MCPServerSSE
 from pydantic import BaseModel, Field
 from dotenv import load_dotenv
 import os
@@ -21,11 +21,13 @@ class ChartResult(BaseModel):
 
 
 model = OpenAIModel(
-    "deepseek/deepseek-r1-0528",
+    "openai/gpt-oss-20b",
     provider=OpenRouterProvider(api_key=os.getenv("OPENROUTER_API_KEY")),
 )
+#model = "google-gla:gemini-2.5-flash-lite-preview-06-17"
 
-mcp_chart = MCPServerStdio("npx", ["-y", "@antv/mcp-server-chart"])
+#mcp_chart = MCPServerStdio("npx", ["-y", "@antv/mcp-server-chart"])
+mcp_chart = MCPServerSSE(url="http://localhost:1221/sse")
 
 agent = Agent(
     model=model,
