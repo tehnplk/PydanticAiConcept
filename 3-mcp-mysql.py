@@ -26,13 +26,7 @@ mcp_mysql = MCPServerStdio(
     },
 )
 
-mcp_chart  = MCPServerStdio(
-    "npx",
-      ["-y", "@antv/mcp-server-chart"],
-      {
-        "DISABLED_TOOLS": "generate_treemap_chart,generate_district_map,generate_organization_chart,generate_fishbone_diagram,generate_mind_map"
-      }
-      )
+
 
 
 class Result(BaseModel):
@@ -42,7 +36,7 @@ class Result(BaseModel):
 
 agent = Agent(
     model="google-gla:gemini-2.5-flash",
-    toolsets=[mcp_mysql, mcp_chart],
+    toolsets=[mcp_mysql],
     system_prompt="You are a helpful assistant.",
     output_type=Result,
 )
