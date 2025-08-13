@@ -12,118 +12,6 @@ mcp = FastMCP("Chart Generator Server", host="0.0.0.0", port=1224)
 
 
 @mcp.tool()
-def generate_bar_chart(data: str) -> Dict[str, Any]:
-    """
-    Generate bar chart from CSV data
-
-     Args:
-        data: CSV string with first column as labels (x-axis) and second column as values (y-axis)
-        
-    Returns:
-        Dictionary containing bar chart image and metadata
-    """
-    try:
-        # Parse CSV string
-        csv_buffer = StringIO(data.strip())
-        df = pd.read_csv(csv_buffer)
-        
-        # Assume first column is labels (x-axis) and second column is values (y-axis)
-        if len(df.columns) < 2:
-            return {
-                "success": False,
-                "error": "CSV must have at least 2 columns",
-                "message": "ข้อมูล CSV ต้องมีอย่างน้อย 2 คอลัมน์"
-            }
-        
-        # Extract data
-        x_labels = df.iloc[:, 0].astype(str).tolist()
-        y_values = pd.to_numeric(df.iloc[:, 1], errors='coerce').tolist()
-        
-        # Create bar chart data format
-        chart_data = {
-            "success": True,
-            "data": {
-                "x": x_labels,
-                "y": y_values,
-                "label": "Data Series"
-            },
-            "config": {
-                "title": "Chart from CSV Data",
-                "xlabel": df.columns[0] if len(df.columns) > 0 else "Categories",
-                "ylabel": df.columns[1] if len(df.columns) > 1 else "Values",
-                "width": 10,
-                "height": 6,
-                "grid": True,
-                "style": "default"
-            },
-            "message": "แปลงข้อมูล CSV สำเร็จ"
-        }
-        
-        # generate chart using matplotlib
-        
-        try:
-            # Create figure
-            fig, ax = plt.subplots(figsize=(chart_data["config"]["width"], chart_data["config"]["height"]))
-            
-            # Create bar chart
-            bars = ax.bar(chart_data["data"]["x"], chart_data["data"]["y"], 
-                         label=chart_data["data"]["label"], color='skyblue', edgecolor='navy')
-            
-            # Set chart properties
-            ax.set_title(chart_data["config"]["title"], fontsize=16, fontweight="bold", pad=20)
-            ax.set_xlabel(chart_data["config"]["xlabel"], fontsize=12)
-            ax.set_ylabel(chart_data["config"]["ylabel"], fontsize=12)
-            
-            # Add grid
-            if chart_data["config"]["grid"]:
-                ax.grid(True, alpha=0.3, axis='y', linestyle='--')
-            
-            # Add value labels on top of bars
-            for bar in bars:
-                height = bar.get_height()
-                ax.text(bar.get_x() + bar.get_width()/2., height,
-                       f'{int(height)}', ha='center', va='bottom')
-            
-            # Rotate x-axis labels if needed
-            if len(chart_data["data"]["x"]) > 5:
-                plt.xticks(rotation=45, ha='right')
-            
-            # Add legend
-            ax.legend()
-            
-            # Convert to base64
-            buffer = io.BytesIO()
-            fig.savefig(buffer, format="png", dpi=300, bbox_inches="tight")
-            buffer.seek(0)
-            image_base64 = base64.b64encode(buffer.read()).decode("utf-8")
-            buffer.close()
-            plt.close(fig)
-            
-            # Return complete response with chart
-            return {
-                "success": True,
-                "chart_type": "bar",
-                "image": f"data:image/png;base64,{image_base64}",
-                "data": chart_data["data"],
-                "config": chart_data["config"],
-                "message": "สร้างแผนภูมิแท่งสำเร็จ"
-            }
-            
-        except Exception as e:
-            return {
-                "success": False,
-                "error": str(e),
-                "message": "เกิดข้อผิดพลาดในการสร้างแผนภูมิ"
-            }
-        
-    except Exception as e:
-        return {
-            "success": False,
-            "error": str(e),
-            "message": "เกิดข้อผิดพลาดในการแปลงข้อมูล CSV"
-        }
-
-@mcp.tool()
 def generate_line_chart(data: str) -> Dict[str, Any]:
     """
     Generate line chart from CSV data
@@ -233,6 +121,239 @@ def generate_line_chart(data: str) -> Dict[str, Any]:
             "error": str(e),
             "message": "เกิดข้อผิดพลาดในการแปลงข้อมูล CSV"
         }
+
+
+@mcp.tool()
+def generate_column_chart(data: str) -> Dict[str, Any]:
+    """
+    Generate column chart from CSV data (vertical bars)
+    
+    Args:
+        data: CSV string with first column as labels (x-axis) and second column as values (y-axis)
+        
+    Returns:
+        Dictionary containing column chart image and metadata
+    """
+    try:
+        # Parse CSV string
+        csv_buffer = StringIO(data.strip())
+        df = pd.read_csv(csv_buffer)
+        
+        # Assume first column is labels (x-axis) and second column is values (y-axis)
+        if len(df.columns) < 2:
+            return {
+                "success": False,
+                "error": "CSV must have at least 2 columns",
+                "message": "ข้อมูล CSV ต้องมีอย่างน้อย 2 คอลัมน์"
+            }
+        
+        # Extract data
+        x_labels = df.iloc[:, 0].astype(str).tolist()
+        y_values = pd.to_numeric(df.iloc[:, 1], errors='coerce').tolist()
+        
+        # Create column chart data format
+        chart_data = {
+            "success": True,
+            "data": {
+                "x": x_labels,
+                "y": y_values,
+                "label": "Data Series"
+            },
+            "config": {
+                "title": "Column Chart from CSV Data",
+                "xlabel": df.columns[0] if len(df.columns) > 0 else "Categories",
+                "ylabel": df.columns[1] if len(df.columns) > 1 else "Values",
+                "width": 10,
+                "height": 6,
+                "grid": True,
+                "style": "default"
+            },
+            "message": "แปลงข้อมูล CSV สำเร็จ"
+        }
+        
+        # generate chart using matplotlib
+        try:
+            # Create figure
+            fig, ax = plt.subplots(figsize=(chart_data["config"]["width"], chart_data["config"]["height"]))
+            
+            # Create vertical column chart (like in your image)
+            colors = ['#5B9BD5', '#70AD47', '#FFC000', '#E15759']  # Blue, Green, Orange, Pink like your image
+            bars = ax.bar(chart_data["data"]["x"], chart_data["data"]["y"], 
+                         label=chart_data["data"]["label"], 
+                         color=colors[:len(x_labels)], 
+                         edgecolor='white', linewidth=1)
+            
+            # Set chart properties
+            ax.set_title(chart_data["config"]["title"], fontsize=16, fontweight="bold", pad=20)
+            ax.set_xlabel(chart_data["config"]["xlabel"], fontsize=12)
+            ax.set_ylabel(chart_data["config"]["ylabel"], fontsize=12)
+            
+            # Add grid
+            if chart_data["config"]["grid"]:
+                ax.grid(True, alpha=0.3, axis='y', linestyle='-', color='lightgray')
+                ax.set_axisbelow(True)
+            
+            # Add value labels on top of bars
+            for bar in bars:
+                height = bar.get_height()
+                ax.text(bar.get_x() + bar.get_width()/2., height + max(y_values)*0.01,
+                       f'{int(height)}', ha='center', va='bottom', fontweight='bold')
+            
+            # Style like your image
+            ax.spines['top'].set_visible(False)
+            ax.spines['right'].set_visible(False)
+            ax.spines['left'].set_color('lightgray')
+            ax.spines['bottom'].set_color('lightgray')
+            
+            # Convert to base64
+            buffer = io.BytesIO()
+            fig.savefig(buffer, format="png", dpi=300, bbox_inches="tight", facecolor='white')
+            buffer.seek(0)
+            image_base64 = base64.b64encode(buffer.read()).decode("utf-8")
+            buffer.close()
+            plt.close(fig)
+            
+            # Return complete response with chart
+            return {
+                "success": True,
+                "chart_type": "column",
+                "image": f"data:image/png;base64,{image_base64}",
+                "data": chart_data["data"],
+                "config": chart_data["config"],
+                "message": "สร้างแผนภูมิคอลัมน์สำเร็จ"
+            }
+            
+        except Exception as e:
+            return {
+                "success": False,
+                "error": str(e),
+                "message": "เกิดข้อผิดพลาดในการสร้างแผนภูมิ"
+            }
+        
+    except Exception as e:
+        return {
+            "success": False,
+            "error": str(e),
+            "message": "เกิดข้อผิดพลาดในการแปลงข้อมูล CSV"
+        }
+
+
+@mcp.tool()
+def generate_bar_chart(data: str) -> Dict[str, Any]:
+    """
+    Generate horizontal bar chart from CSV data
+    
+    Args:
+        data: CSV string with first column as labels (y-axis) and second column as values (x-axis)
+        
+    Returns:
+        Dictionary containing horizontal bar chart image and metadata
+    """
+    try:
+        # Parse CSV string
+        csv_buffer = StringIO(data.strip())
+        df = pd.read_csv(csv_buffer)
+        
+        # Assume first column is labels (y-axis) and second column is values (x-axis)
+        if len(df.columns) < 2:
+            return {
+                "success": False,
+                "error": "CSV must have at least 2 columns",
+                "message": "ข้อมูล CSV ต้องมีอย่างน้อย 2 คอลัมน์"
+            }
+        
+        # Extract data
+        y_labels = df.iloc[:, 0].astype(str).tolist()
+        x_values = pd.to_numeric(df.iloc[:, 1], errors='coerce').tolist()
+        
+        # Create bar chart data format
+        chart_data = {
+            "success": True,
+            "data": {
+                "y": y_labels,
+                "x": x_values,
+                "label": "Data Series"
+            },
+            "config": {
+                "title": "Horizontal Bar Chart from CSV Data",
+                "xlabel": df.columns[1] if len(df.columns) > 1 else "Values",
+                "ylabel": df.columns[0] if len(df.columns) > 0 else "Categories",
+                "width": 10,
+                "height": 6,
+                "grid": True,
+                "style": "default"
+            },
+            "message": "แปลงข้อมูล CSV สำเร็จ"
+        }
+        
+        # generate chart using matplotlib
+        try:
+            # Create figure
+            fig, ax = plt.subplots(figsize=(chart_data["config"]["width"], chart_data["config"]["height"]))
+            
+            # Create horizontal bar chart (like in your image)
+            colors = ['#70AD47', '#5B9BD5', '#FFC000', '#E15759']  # Green, Blue, Orange, Pink
+            bars = ax.barh(chart_data["data"]["y"], chart_data["data"]["x"], 
+                          color=colors[:len(y_labels)], 
+                          edgecolor='white', linewidth=1)
+            
+            # Set chart properties
+            ax.set_title(chart_data["config"]["title"], fontsize=16, fontweight="bold", pad=20)
+            ax.set_xlabel(chart_data["config"]["xlabel"], fontsize=12)
+            ax.set_ylabel(chart_data["config"]["ylabel"], fontsize=12)
+            
+            # Add grid
+            if chart_data["config"]["grid"]:
+                ax.grid(True, alpha=0.3, axis='x', linestyle='-', color='lightgray')
+                ax.set_axisbelow(True)
+            
+            # Add value labels at end of bars
+            for i, (bar, value) in enumerate(zip(bars, x_values)):
+                width = bar.get_width()
+                ax.text(width + max(x_values)*0.01, bar.get_y() + bar.get_height()/2.,
+                       f'{int(value)}', ha='left', va='center', fontweight='bold')
+            
+            # Style like your image
+            ax.spines['top'].set_visible(False)
+            ax.spines['right'].set_visible(False)
+            ax.spines['left'].set_color('lightgray')
+            ax.spines['bottom'].set_color('lightgray')
+            
+            # Invert y-axis to match your image (top to bottom)
+            ax.invert_yaxis()
+            
+            # Convert to base64
+            buffer = io.BytesIO()
+            fig.savefig(buffer, format="png", dpi=300, bbox_inches="tight", facecolor='white')
+            buffer.seek(0)
+            image_base64 = base64.b64encode(buffer.read()).decode("utf-8")
+            buffer.close()
+            plt.close(fig)
+            
+            # Return complete response with chart
+            return {
+                "success": True,
+                "chart_type": "bar",
+                "image": f"data:image/png;base64,{image_base64}",
+                "data": chart_data["data"],
+                "config": chart_data["config"],
+                "message": "สร้างแผนภูมิแท่งแนวนอนสำเร็จ"
+            }
+            
+        except Exception as e:
+            return {
+                "success": False,
+                "error": str(e),
+                "message": "เกิดข้อผิดพลาดในการสร้างแผนภูมิ"
+            }
+        
+    except Exception as e:
+        return {
+            "success": False,
+            "error": str(e),
+            "message": "เกิดข้อผิดพลาดในการแปลงข้อมูล CSV"
+        }
+
 
 @mcp.tool()
 def generate_pie_chart(data: str) -> Dict[str, Any]:
