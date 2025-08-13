@@ -36,7 +36,7 @@ def get_db_connection():
     except Exception as e:
         raise Exception(f"Failed to connect to database: {str(e)}")
 
-
+@mcp.tool()
 def get_all_tables() -> List[str]:
     """Get list of all tables in the database"""
     connection = get_db_connection()
@@ -50,7 +50,7 @@ def get_all_tables() -> List[str]:
     finally:
         connection.close()
 
-
+@mcp.tool()
 def describe_table(table_name: str) -> Dict[str, Any]:
     """Get table structure description"""
     connection = get_db_connection()

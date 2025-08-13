@@ -17,7 +17,7 @@ import logfire
 logfire.configure()
 logfire.instrument_pydantic_ai()
 
-mcp_server = MCPServerSSE(url="http://localhost:8081/sse")
+mcp_server = MCPServerSSE(url="http://localhost/sse")
 
 
 
