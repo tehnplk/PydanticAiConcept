@@ -48,17 +48,40 @@ class AgentWorker(QObject):
 
 
     def run(self):
-        asyncio.run(self.chat())
+        #asyncio.run(self.chat())
+        import traceback, logging, asyncio
+        # asyncio.run(self.chat())
 
-    async def chat(self):
+        loop = asyncio.new_event_loop()
+        loop.set_exception_handler(
+            lambda l, c: logging.error(
+                f"Asyncio exception: {c.get('message')}", exc_info=c.get("exception")
+            )
+        )
+        asyncio.set_event_loop(loop)
         try:
+            loop.run_until_complete(self.chat())
+        except Exception as e:
+            print(f"{e}\n{traceback.format_exc()}")
+        finally:
+            try:
+                pending = asyncio.all_tasks(loop)
+                for task in pending:
+                    task.cancel()
+                if pending:
+                    loop.run_until_complete(
+                        asyncio.gather(*pending, return_exceptions=True)
+                    )
+            finally:
+                loop.close()
+
+    async def chat(self):        
             async with self.agent:
                 result = await self.agent.run(self.prompt, message_history=self.message_history)
             self.new_message_history = result.all_messages()
             self.signal_message_history.emit(self.new_message_history)  
             self.signal_finished.emit(result.output.query, result.output.result)
-        except Exception as e:
-            self.signal_error.emit(str(e))
+       
 
 class ChatWindow(QWidget):
     def __init__(self):

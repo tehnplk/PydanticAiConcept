@@ -27,6 +27,8 @@ mcp_mysql = MCPServerStdio(
 )
 
 
+
+
 class Result(BaseModel):
     query: str = Field(description="SQL query")
     result: str = Field(description="result of the SQL query display in tabular format")

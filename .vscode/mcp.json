@@ -1,0 +1,9 @@
+{
+	"servers": {
+		"chart-sse": {
+			"url": "http://localhost:1122/sse",
+			"type": "http",
+		}
+	},
+	"inputs": []
+}
