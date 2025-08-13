@@ -17,7 +17,7 @@ logfire.instrument_pydantic_ai()
 
 
 class ChartResult(BaseModel):
-    img: str = Field(description="get image url from tool_response")
+    image: str = Field(description="get image url from tool_response")
     markdown: str = Field(description="convert img url to markdown format")
     #explain: str = Field(description="generate explain text for chart if empty then return empty value")
 
@@ -30,10 +30,10 @@ model = OpenAIModel(
     #"google/gemini-2.0-flash-lite-001",
     provider=OpenRouterProvider(api_key=os.getenv("OPENROUTER_API_KEY")),
 )
-#model = "google-gla:gemini-2.5-flash-lite"
+model = "google-gla:gemini-2.5-flash"
 
 
-mcp_chart = MCPServerSSE(url='http://localhost')
+mcp_chart = MCPServerSSE(url='http://localhost:1224/sse')
 
 agent = Agent(
     model=model,
@@ -47,7 +47,7 @@ agent = Agent(
 async def chat():
     async with agent:
         result = await agent.run(
-            "แสดงแผนภูมิจากข้อมูลนี้\n\n"
+            "แสดงกราฟวงกลมจากข้อมูลนี้\n\n"
             "หมู่ที่ , ประชากร(คน)\n"
             "1 , 150\n"
             "2 , 200\n"
@@ -55,7 +55,7 @@ async def chat():
             "4 , 50\n"
             "5 , 50"
         )
-    print(result.output.img)
+    print(result.output.image)
     print(result.output.markdown)
     #print(result.output.explain)
 

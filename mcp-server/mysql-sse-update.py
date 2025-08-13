@@ -11,7 +11,7 @@ load_dotenv()
 import json
 from typing import List, Dict, Any, Optional
 import pymysql
-from mcp.server.fastmcp import FastMCP
+from fastmcp import FastMCP
 
 # Initialize FastMCP
 mcp = FastMCP("MySQL Database Server", host="0.0.0.0", port=8081)
