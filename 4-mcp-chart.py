@@ -47,7 +47,7 @@ agent = Agent(
 async def chat():
     async with agent:
         result = await agent.run(
-            "แสดงกราฟแท่งจากข้อมูลนี้\n\n"
+            "แสดงกราฟแท่งแนวตั้งจากข้อมูลนี้\n\n"
             "หมู่ที่ , ประชากร(คน)\n"
             "1 , 150\n"
             "2 , 200\n"
