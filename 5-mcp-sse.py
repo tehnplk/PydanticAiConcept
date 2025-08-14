@@ -33,7 +33,7 @@ agent = Agent(
 
 async def chat():
     async with agent:
-        result = await agent.run("นับจำนวนประชากรแยกรายหมู่บ้าน")
+        result = await agent.run("นับจำนวนประชากรแยกรายหมู่บ้าน นับจาก house")
     print(result.output.query)
     print(result.output.result)
 
