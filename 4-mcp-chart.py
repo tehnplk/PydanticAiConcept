@@ -27,8 +27,8 @@ model = OpenAIModel(
 #model = "google-gla:gemini-2.5-flash"
 
 
-mcp_chart = MCPServerSSE(url='http://203.157.118.95/sse')
-#mcp_chart = MCPServerStreamableHTTP(url='http://203.157.118.95/mcp')
+#mcp_chart = MCPServerSSE(url='http://203.157.118.95:81/sse')
+mcp_chart = MCPServerStreamableHTTP(url='http://203.157.118.95:81/mcp')
 
 agent = Agent(
     model=model,
