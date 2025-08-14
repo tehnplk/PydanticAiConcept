@@ -8,20 +8,19 @@ mcp = FastMCP("Data Analysis MCP Server", host="0.0.0.0", port=8080)
 
 
 @mcp.tool()
-def mutiple_linear_regression(data: str,context: Context) -> Dict[str, Any]:
+def mean(data: str) -> Dict[str, Any]:
     """
-    -หาค่าสถิติต่างๆจากข้อมูลเพื่อใช้วิเคราะห์
-    -หาค่าสัมประสิทธิ์ของสมการถดถอย
-    -ใช้ multiple linear regression เพื่อวิเคราะห์ข้อมูล
+    -หาค่าเฉลี่ย
+    
 
     Args:
         data: ข้อมูลที่ต้องการวิเคราะห์
 
     Returns:
-        Result of the multiple linear regression
+        Result of the mean
     """
-
-    return {"success": True, "result": context}
+    data = io.StringIO(data)
+    return {"success": True, "result": np.mean(data)}
 
 
 if __name__ == "__main__":
