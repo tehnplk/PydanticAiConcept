@@ -14,8 +14,8 @@ import logfire
 logfire.configure()
 logfire.instrument_pydantic_ai()
 
-chat_server = MCPServerStreamableHTTP(url="http://203.157.118.95:81/mcp")
-db_server = MCPServerSSE(url="http://203.157.118.95:82/sse")
+mcp_chart = MCPServerStreamableHTTP(url=os.getenv("MCP_CHART_URL"))
+mcp_db = MCPServerSSE(url=os.getenv("MCP_SANDBOX_HOS_URL"))
 
 
 class Result(BaseModel):
@@ -35,7 +35,7 @@ model = OpenAIModel(
 sys_prompt = open("sys_prompt.txt", "r", encoding="utf-8").read()
 agent = Agent(
     model=model,
-    toolsets=[chat_server, db_server],
+    toolsets=[mcp_chart, mcp_db],
     system_prompt=sys_prompt,
     output_type=str,
 )
@@ -43,7 +43,7 @@ agent = Agent(
 
 async def chat():
     async with agent:
-        result = await agent.run("นับจำนวนประชากรแยกรายหมู่บ้าน นับจาก house และนับผลลัพธ์ไปสร้างเป็นกราฟแท่ง")
+        result = await agent.run("นับจำนวนประชากรแยกรายหมู่บ้าน นับจาก house และนำผลลัพธ์ไปสร้างเป็นกราฟแท่ง")
     print(result.output)
     #print(result.output.result)
 
