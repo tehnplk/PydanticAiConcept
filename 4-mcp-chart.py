@@ -16,12 +16,6 @@ logfire.configure()
 logfire.instrument_pydantic_ai()
 
 
-class ChartResult(BaseModel):
-    image: str = Field(description="get image url from tool_response")
-    markdown: str = Field(description="convert img url to markdown format")
-    #explain: str = Field(description="generate explain text for chart if empty then return empty value")
-
-
 model = OpenAIModel(
     "openai/gpt-oss-20b",
     #"openai/gpt-oss-120b",
@@ -30,16 +24,17 @@ model = OpenAIModel(
     #"google/gemini-2.0-flash-lite-001",
     provider=OpenRouterProvider(api_key=os.getenv("OPENROUTER_API_KEY")),
 )
-model = "google-gla:gemini-2.5-flash"
+#model = "google-gla:gemini-2.5-flash"
 
 
-mcp_chart = MCPServerSSE(url='http://localhost:1224/sse')
+#mcp_chart = MCPServerSSE(url='http://203.157.118.95/sse')
+mcp_chart = MCPServerStreamableHTTP(url='http://203.157.118.95/mcp')
 
 agent = Agent(
     model=model,
     toolsets=[mcp_chart],
     system_prompt="You are a chart generating expert , you have mcp tool to generate chart.",
-    output_type=ChartResult,
+    output_type=str,
     
 )
 
@@ -47,7 +42,7 @@ agent = Agent(
 async def chat():
     async with agent:
         result = await agent.run(
-            "แสดงกราฟแท่งแนวตั้งจากข้อมูลนี้\n\n"
+            "แสดงกราฟข้อมูลนี้\n\n"
             "หมู่ที่ , ประชากร(คน)\n"
             "1 , 150\n"
             "2 , 200\n"
@@ -55,9 +50,7 @@ async def chat():
             "4 , 50\n"
             "5 , 50"
         )
-    print(result.output.image)
-    print(result.output.markdown)
-    #print(result.output.explain)
+    print(result.output)
 
 if __name__ == "__main__":
     asyncio.run(chat())
