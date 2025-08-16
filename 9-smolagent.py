@@ -76,4 +76,4 @@ agent = CodeAgent(
     tools=[sql_engine],
     model=InferenceClientModel(model_id="meta-llama/Meta-Llama-3.1-8B-Instruct"),
 )
-agent.run("ขอผลรวมรายรับทั้งหมด")
+agent.run("Can you give me the name of the client who got the most expensive receipt?")
