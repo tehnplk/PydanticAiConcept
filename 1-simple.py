@@ -1,7 +1,7 @@
 from pydantic_ai import Agent
 import asyncio
 from dotenv import load_dotenv
-from pydantic_ai.mcp import MCPServerSSE
+from pydantic_ai.mcp import MCPServerSSE,MCPServerStreamableHTTP
 from pydantic import BaseModel, Field
 
 load_dotenv()
@@ -11,7 +11,7 @@ import logfire
 logfire.configure()
 logfire.instrument_pydantic_ai()
 
-mcp_server = MCPServerSSE(url="http://localhost:8080/sse")
+mcp_server = MCPServerStreamableHTTP(url="http://localhost:8081/mcp")
 
 agent = Agent(
     model="google-gla:gemini-2.5-flash",
