@@ -152,7 +152,7 @@ def add_two(a: float, b: float) -> Dict[str, Any]:
     Returns:
         Dictionary with operation details and result
     """
-    return add([a, b])
+    return a+b
 
 @mcp.tool()
 def subtract_two(a: float, b: float) -> Dict[str, Any]:
@@ -166,7 +166,7 @@ def subtract_two(a: float, b: float) -> Dict[str, Any]:
     Returns:
         Dictionary with operation details and result
     """
-    return subtract([a, b])
+    return a-b
 
 @mcp.tool()
 def multiply_two(a: float, b: float) -> Dict[str, Any]:
@@ -180,7 +180,7 @@ def multiply_two(a: float, b: float) -> Dict[str, Any]:
     Returns:
         Dictionary with operation details and result
     """
-    return multiply([a, b])
+    return a*b
 
 @mcp.tool()
 def divide_two(a: float, b: float) -> Dict[str, Any]:
@@ -194,7 +194,7 @@ def divide_two(a: float, b: float) -> Dict[str, Any]:
     Returns:
         Dictionary with operation details and result
     """
-    return divide([a, b])
+    return a/b
 
 @mcp.tool()
 def calculate_expression(expression: str) -> Dict[str, Any]:
