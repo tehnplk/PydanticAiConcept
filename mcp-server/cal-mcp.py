@@ -6,6 +6,7 @@ Supports multiple numbers in single operations using lists.
 
 import asyncio
 from typing import Any, Dict, List, Optional, Union
+from unittest import result
 from fastmcp import FastMCP
 import re
 from functools import reduce
@@ -152,7 +153,14 @@ def add_two(a: float, b: float) -> Dict[str, Any]:
     Returns:
         Dictionary with operation details and result
     """
-    return a+b
+    result = a+b
+    return {
+        "operation": f"{a} + {b}",
+        "result": result,
+        "type": "addition",
+        "operands": [a, b],
+        "count": 2
+    }
 
 @mcp.tool()
 def subtract_two(a: float, b: float) -> Dict[str, Any]:
@@ -166,7 +174,14 @@ def subtract_two(a: float, b: float) -> Dict[str, Any]:
     Returns:
         Dictionary with operation details and result
     """
-    return a-b
+    result = a-b
+    return {
+        "operation": f"{a} - {b}",
+        "result": result,
+        "type": "subtraction",
+        "operands": [a, b],
+        "count": 2
+    }
 
 @mcp.tool()
 def multiply_two(a: float, b: float) -> Dict[str, Any]:
@@ -180,7 +195,14 @@ def multiply_two(a: float, b: float) -> Dict[str, Any]:
     Returns:
         Dictionary with operation details and result
     """
-    return a*b
+    result = a*b
+    return {
+        "operation": f"{a} * {b}",
+        "result": result,
+        "type": "multiplication",
+        "operands": [a, b],
+        "count": 2
+    }
 
 @mcp.tool()
 def divide_two(a: float, b: float) -> Dict[str, Any]:
@@ -194,7 +216,14 @@ def divide_two(a: float, b: float) -> Dict[str, Any]:
     Returns:
         Dictionary with operation details and result
     """
-    return a/b
+    result = a/b
+    return {
+        "operation": f"{a} / {b}",
+        "result": result,
+        "type": "division",
+        "operands": [a, b],
+        "count": 2
+    }
 
 @mcp.tool()
 def calculate_expression(expression: str) -> Dict[str, Any]:
